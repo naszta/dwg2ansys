@@ -3,6 +3,7 @@
 #include <Windows.h>
 
 #include "dbmain.h"
+#include "dbacis.h"
 
 #include "dwg2ansysVersion.h"
 

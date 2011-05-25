@@ -57,7 +57,7 @@ SET(dwg2ansysLibs
   ${RealDWG_LIB_DIR}/rcexelib.obj
 )
 
-OPTION(USE_BREP_MODULE "Use Brep module" ON)
+OPTION(USE_BREP_MODULE "Use Brep module" OFF)
 IF(USE_BREP_MODULE)
   SET(RealDWG_BREP_INCLUDE_DIR "" CACHE PATH "RealDWG Brep include dir")
   IF(NOT EXISTS "${RealDWG_BREP_INCLUDE_DIR}")

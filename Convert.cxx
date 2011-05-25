@@ -6,16 +6,14 @@
 
 #include "Serialize.h"
 
-#include <memory>
-
 #include "dwg2ansysVersion.h"
 
 bool Convert::dwg_to_ansys( const wchar_t * source_name, std::ostream &os )
 {
-  std::auto_ptr<AcDbDatabase> database( new AcDbDatabase(false) );
+  AcDbDatabase * database = new AcDbDatabase(false);
   if ( database->readDwgFile( source_name ) != Acad::eOk )
     return false;
-  acdbHostApplicationServices()->setWorkingDatabase( database.get() );
+  acdbHostApplicationServices()->setWorkingDatabase( database );
 
   AcDbBlockTable * block_table = 0;
   AcDbBlockTableRecord * block_table_record = 0;
@@ -25,6 +23,7 @@ bool Convert::dwg_to_ansys( const wchar_t * source_name, std::ostream &os )
   if ( database->getSymbolTable( block_table, AcDb::kForRead ) != Acad::eOk )
   {
     acdbHostApplicationServices()->setWorkingDatabase(0);
+    delete database;
     return false;
   }
 
@@ -32,6 +31,7 @@ bool Convert::dwg_to_ansys( const wchar_t * source_name, std::ostream &os )
   {
     block_table->close();
     acdbHostApplicationServices()->setWorkingDatabase(0);
+    delete database;
     return false;
   }
 
@@ -40,6 +40,7 @@ bool Convert::dwg_to_ansys( const wchar_t * source_name, std::ostream &os )
     block_table_record->close();
     block_table->close();
     acdbHostApplicationServices()->setWorkingDatabase(0);
+    delete database;
     return false;
   }
 
@@ -63,5 +64,7 @@ bool Convert::dwg_to_ansys( const wchar_t * source_name, std::ostream &os )
   delete pRecordIter;
   block_table_record->close();
   block_table->close();
+  acdbHostApplicationServices()->setWorkingDatabase(0);
+  delete database;
   return true;
 }

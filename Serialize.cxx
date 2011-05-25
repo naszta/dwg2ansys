@@ -17,7 +17,19 @@
 
 void unknown_type( ostream &os, AcDbEntity * entity, const char * base_type )
 {
-  os << "! Unsupported " << base_type << " type : " << entity->isA()->name() << "\n";
+  os << "! Unsupported " << base_type << " type : ";
+  const wchar_t * name = entity->isA()->name();
+  size_t i = 0;
+  while ( name[i] != 0 )
+  {
+    if ( ( name[i] < 128 ) && ( name[i] > -128 ) )
+      os.put( static_cast<char>( name[i] ) );
+    else
+      os.put( ' ' );
+
+    ++i;
+  }
+  os << "\n";
 }
 
 ostream & operator << ( ostream &os, AcDbLine * line )
@@ -26,6 +38,7 @@ ostream & operator << ( ostream &os, AcDbLine * line )
   line->getStartPoint(p0);
   line->getEndPoint(p1);
 
+  os << "! AcDbLine\n";
   os << "K," << ++Model::CurrentModel.NumOfPoints << "," << p0[0] << "," << p0[1] << "," << p0[2] << "\n";
   os << "K," << ++Model::CurrentModel.NumOfPoints << "," << p1[0] << "," << p1[1] << "," << p1[2] << "\n";
   os << "L," << ( Model::CurrentModel.NumOfPoints - 1 ) << "," << Model::CurrentModel.NumOfPoints << "\n";
@@ -39,6 +52,8 @@ ostream & operator << ( ostream &os, AcDb2dPolyline * polyline2d )
   AcDbObjectIterator * pBbObjIter = polyline2d->vertexIterator();
   AcDb2dVertex * p2dVert = 0;
   int prev_id = -1;
+
+  os << "! AcDb2dPolyline\n";
 
   while ( ! pBbObjIter->done() )
   {
@@ -66,6 +81,8 @@ ostream & operator << ( ostream &os, AcDb3dPolyline * polyline3d )
   AcDb3dPolylineVertex * p3dVert = 0;
   int prev_id = -1;
 
+  os << "! AcDb3dPolyline\n";
+
   while ( ! pBbObjIter->done() )
   {
     if ( polyline3d->openVertex( p3dVert, pBbObjIter->objectId(), AcDb::kForRead ) == Acad::eOk )
@@ -92,6 +109,8 @@ ostream & operator << ( ostream &os, AcDbPolyline * polyline )
   if ( NumberOfPoints < 2 )
     return os;
 
+  os << "! AcDbPolyline\n";
+
   int prev_id = -1;
   for ( unsigned int i = 0; i < NumberOfPoints; ++i )
   {
@@ -114,6 +133,7 @@ ostream & operator << ( ostream &os, AcDbCurve * curve )
     return os;
   }
   AcDb2dPolyline * polyline2d = AcDb2dPolyline::cast( curve );
+  if ( polyline2d != 0 )
   {
     os << polyline2d;
     return os;
@@ -136,6 +156,7 @@ ostream & operator << ( ostream &os, AcDbCurve * curve )
 
 ostream & operator << ( ostream &os, AcDbPoint * point )
 {
+  os << "! AcDbPoint\n";
   AcGePoint3d p0 = point->position();
   os << "K," << ++Model::CurrentModel.NumOfPoints << "," << p0[0] << "," << p0[1] << "," << p0[2] << "\n";
   return os;
