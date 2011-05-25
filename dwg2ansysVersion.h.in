@@ -1,0 +1,13 @@
+#ifndef dwg2ansysVersionH
+#define dwg2ansysVersionH 1
+
+#cmakedefine USE_BREP_MODULE
+
+#define dwg2ansys_MAJOR_VERSION @dwg2ansys_MAJOR_VERSION@
+#define dwg2ansys_MINOR_VERSION @dwg2ansys_MINOR_VERSION@
+#define dwg2ansys_BUILD_VERSION @dwg2ansys_BUILD_VERSION@
+
+#define dwg2ansys_VERSION "@dwg2ansys_VERSION@"
+#define dwg2ansys_VERSION_W L"@dwg2ansys_VERSION@"
+
+#endif
