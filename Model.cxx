@@ -3,7 +3,7 @@
 Model Model::CurrentModel;
 
 Model::Model( void )
-: NumOfPoints(0)
+: NumOfPoints(0), NumOfLines(0)
 {
 
 }

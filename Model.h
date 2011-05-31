@@ -6,6 +6,7 @@ class Model
 public:
   Model( void );
   int NumOfPoints;
+  int NumOfLines;
   static Model CurrentModel;
 };
 

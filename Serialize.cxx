@@ -42,6 +42,7 @@ ostream & operator << ( ostream &os, AcDbLine * line )
   os << "K," << ++Model::CurrentModel.NumOfPoints << "," << p0[0] << "," << p0[1] << "," << p0[2] << "\n";
   os << "K," << ++Model::CurrentModel.NumOfPoints << "," << p1[0] << "," << p1[1] << "," << p1[2] << "\n";
   os << "L," << ( Model::CurrentModel.NumOfPoints - 1 ) << "," << Model::CurrentModel.NumOfPoints << "\n";
+  ++Model::CurrentModel.NumOfLines;
   
   return os;
 }
@@ -62,7 +63,10 @@ ostream & operator << ( ostream &os, AcDb2dPolyline * polyline2d )
       p0 = p2dVert->position();
       os << "K," << ++Model::CurrentModel.NumOfPoints << "," << p0[0] << "," << p0[1] << "," << p0[2] << "\n";
       if ( prev_id >= 0 )
+      {
         os << "L," << prev_id << "," << Model::CurrentModel.NumOfPoints << "\n";
+        ++Model::CurrentModel.NumOfLines;
+      }
       prev_id = Model::CurrentModel.NumOfPoints;
       p2dVert->close();
       p2dVert = 0;
@@ -90,7 +94,10 @@ ostream & operator << ( ostream &os, AcDb3dPolyline * polyline3d )
       p0 = p3dVert->position();
       os << "K," << ++Model::CurrentModel.NumOfPoints << "," << p0[0] << "," << p0[1] << "," << p0[2] << "\n";
       if ( prev_id >= 0 )
+      {
         os << "L," << prev_id << "," << Model::CurrentModel.NumOfPoints << "\n";
+         ++Model::CurrentModel.NumOfLines;
+      }
       prev_id = Model::CurrentModel.NumOfPoints;
       p3dVert->close();
       p3dVert = 0;
@@ -117,7 +124,10 @@ ostream & operator << ( ostream &os, AcDbPolyline * polyline )
     polyline->getPointAt( i, p0 );
     os << "K," << ++Model::CurrentModel.NumOfPoints << "," << p0[0] << "," << p0[1] << "," << p0[2] << "\n";
     if ( prev_id >= 0 )
+    {
       os << "L," << prev_id << "," << Model::CurrentModel.NumOfPoints << "\n";
+      ++Model::CurrentModel.NumOfLines;
+    }
     prev_id = Model::CurrentModel.NumOfPoints;
   }
 
