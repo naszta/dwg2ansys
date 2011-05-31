@@ -13,8 +13,8 @@ MainDialog::MainDialog( QWidget * parent, Qt::WindowFlags flags )
 : QDialog(parent,flags), sets( new QSettings )
 {
   ui.setupUi(this);
-  connect( ui.pushFrom, SIGNAL(clicked()), this, SLOT(pushFrom) );
-  connect( ui.pushTo, SIGNAL(clicked()), this, SLOT(pushTo) );
+  connect( ui.pushFrom, SIGNAL(clicked()), this, SLOT(pushFrom()) );
+  connect( ui.pushTo, SIGNAL(clicked()), this, SLOT(pushTo()) );
   connect( this, SIGNAL(accepted()), this, SLOT(MakeConvert()) );
 
   this->restoreGeometry( this->sets->value( "MainDialog/Geometry", this->saveGeometry() ).toByteArray() );
