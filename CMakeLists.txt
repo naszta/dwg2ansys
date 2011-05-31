@@ -27,12 +27,14 @@ IF(EXISTS ${dwg2ansys_SOURCE_DIR}/.git)
 ENDIF(EXISTS ${dwg2ansys_SOURCE_DIR}/.git)
 SET(dwg2ansys_VERSION "${dwg2ansys_MAJOR_VERSION}.${dwg2ansys_MINOR_VERSION}.${dwg2ansys_BUILD_VERSION}")
 
-SET(RealDWG_INCLUDE_DIR "" CACHE PATH "RealDWG include dir")
+SET(RealDWG_ROOT_DIR "" CACHE PATH "RealDWG root directory")
+
+SET(RealDWG_INCLUDE_DIR "${RealDWG_ROOT_DIR}/Inc")
 IF(NOT EXISTS "${RealDWG_INCLUDE_DIR}")
   MESSAGE(FATAL_ERROR "RealDWG include directory is invalid")
 ENDIF(NOT EXISTS "${RealDWG_INCLUDE_DIR}")
 
-SET(RealDWG_LIB_DIR "" CACHE PATH "RealDWG lib dir")
+SET(RealDWG_LIB_DIR "${RealDWG_ROOT_DIR}/Lib")
 IF(NOT EXISTS "${RealDWG_LIB_DIR}")
   MESSAGE(FATAL_ERROR "RealDWG lib directory is invalid")
 ENDIF(NOT EXISTS "${RealDWG_LIB_DIR}")
@@ -102,8 +104,15 @@ IF(USE_BREP_MODULE)
 ENDIF(USE_BREP_MODULE)
 
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/dwg2ansysVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/dwg2ansysVersion.h @ONLY)
+CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/icon.ico ${CMAKE_CURRENT_BINARY_DIR}/icon.ico COPYONLY)
 
-ADD_EXECUTABLE(dwg2ansys ${dwg2ansysSrcs} ${dwg2ansysHdrs})
+IF(WIN32)
+  SET(WIN_VERSION ${CMAKE_CURRENT_BINARY_DIR}/dwg2ansysVersion.rc)
+  CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/dwg2ansysVersion.rc.in ${WIN_VERSION} @ONLY IMMEDIATE)
+  SOURCE_GROUP("Resources" FILES ${WIN_VERSION} )
+ENDIF(WIN32)
+
+ADD_EXECUTABLE(dwg2ansys ${dwg2ansysSrcs} ${dwg2ansysHdrs} ${WIN_VERSION})
 
 SET_TARGET_PROPERTIES(dwg2ansys PROPERTIES
   VERSION "${dwg2ansys_MAJOR_VERSION}.${dwg2ansys_MINOR_VERSION}"
@@ -113,3 +122,22 @@ SET_TARGET_PROPERTIES(dwg2ansys PROPERTIES
 TARGET_LINK_LIBRARIES(dwg2ansys
   ${dwg2ansysLibs}
 )
+
+INSTALL(
+  TARGETS dwg2ansys
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+)
+# install RealDWG
+INSTALL(FILES
+  "${RealDWG_ROOT_DIR}/ac1st18.dll"
+  "${RealDWG_ROOT_DIR}/acdb18.dll"
+  "${RealDWG_ROOT_DIR}/acge18.dll"
+  "${RealDWG_ROOT_DIR}/AcUt.dll" 
+  DESTINATION bin
+)
+
+OPTION(dwg2ansys_MAKE_PACK "Generate pacakage files." ON)
+IF(dwg2ansys_MAKE_PACK)
+  INCLUDE(CPackConfig.cmake)
+ENDIF(dwg2ansys_MAKE_PACK)
