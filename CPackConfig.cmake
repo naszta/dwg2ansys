@@ -26,13 +26,13 @@ ENDIF(${CPACK_SYSTEM_NAME} MATCHES Windows)
 IF(NOT DEFINED CPACK_PACKAGE_FILE_NAME)
   SET(CPACK_PACKAGE_FILE_NAME "${CPACK_SOURCE_PACKAGE_FILE_NAME}-${CPACK_SYSTEM_NAME}")
 ENDIF(NOT DEFINED CPACK_PACKAGE_FILE_NAME)
-SET(CPACK_PACKAGE_EXECUTABLES "dwg2ansys" "dwg2ansys")
+SET(CPACK_PACKAGE_EXECUTABLES "dwg2ansysGui" "dwg2ansysGui")
 
 IF(WIN32 AND NOT UNIX)
   # There is a bug in NSI that does not handle full unix paths properly. Make
   # sure there is at least one set of four (4) backlasshes.
   SET(CPACK_PACKAGE_ICON "${dwg2ansys_BINARY_DIR}\\\\icon.ico")
-  SET(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\dwg2ansys.exe")
+  SET(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\dwg2ansysGui.exe")
   SET(CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_INSTALL_DIRECTORY} an AutoCAD DWG and DXF convert tool to ANSYS")
   SET(CPACK_NSIS_HELP_LINK "http:\\\\\\\\naszta.hu\\\\dwg2ansys.html")
   SET(CPACK_NSIS_URL_INFO_ABOUT "http:\\\\\\\\naszta.hu\\\\dwg2ansys.html")
