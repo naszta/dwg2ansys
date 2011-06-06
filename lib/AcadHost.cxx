@@ -120,6 +120,8 @@ AcadHost::StaticHost::StaticHost( void )
   : host( new AcadHost )
 {
   acdbSetHostApplicationServices( this->host );
+  Adesk::Int32 lcid = 0x00000409;
+  acdbValidateSetup(lcid);  
 }
 
 AcadHost::StaticHost::~StaticHost( void )
