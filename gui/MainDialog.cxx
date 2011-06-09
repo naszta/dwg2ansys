@@ -7,8 +7,6 @@
 
 #include "Convert.h"
 
-#include <fstream>
-
 MainDialog::MainDialog( QWidget * parent, Qt::WindowFlags flags )
 : QDialog(parent,flags), sets( new QSettings )
 {
@@ -59,19 +57,11 @@ void MainDialog::MakeConvert( void )
     return;
   }
 
-  std::ofstream file( ui.lineTo->text().toAscii(), std::ios_base::trunc | std::ios_base::out );
-  if ( ! file.is_open() )
-  {
-    QMessageBox::information( this, "Warning!", ui.lineTo->text() + QString(" cannot be opened for write!") );
-    return;
-  }
-  QString filename = ui.lineFrom->text();
+  QString sfilename = ui.lineFrom->text();
+  QString tfilename = ui.lineTo->text();
 
-  if ( ! Convert::dwg_to_ansys( (wchar_t *) filename.utf16(), file ) )
+  if ( ! Convert::dwg_to_ansys( (wchar_t *) sfilename.utf16(), (wchar_t *) tfilename.utf16() ) )
   {
     QMessageBox::information( this, "Warning!", ui.lineFrom->text() + QString(" cannot be converted to ") + ui.lineTo->text() + QString("!"));
   }
-
-  file.flush();
-  file.close();
 }

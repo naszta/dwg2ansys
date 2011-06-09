@@ -54,25 +54,27 @@ ENDIF(USE_BREP_MODULE)
 SET(dwg2ansysLibSrcs
   AcadHost.cxx
   Convert.cxx
-  Model.cxx
   Serialize.cxx
+  GeomDB.cxx
+  internalTypes.cxx
 )
 
 SET(dwg2ansysLibHdrs
   AcadHost.h
   Convert.h
-  Model.h
   Serialize.h
   dwg2ansysLibExport.h
+  GeomDB.h
+  internalTypes.h
   ${dwg2ansys_BINARY_DIR}/dwg2ansysVersion.h
 )
 
 IF(USE_BREP_MODULE)
-  SET(dwg2ansysSrcs ${dwg2ansysSrcs}
-    SerializeBrep.cxx  
+  SET(dwg2ansysLibSrcs ${dwg2ansysLibSrcs}
+    SerializeBrep.cxx
+	GeomDBBrep.cxx
   )
-  SET(dwg2ansysHdrs ${dwg2ansysHdrs}
-    SerializeBrep.h
+  SET(dwg2ansysLibHdrs ${dwg2ansysLibHdrs}
   )
 ENDIF(USE_BREP_MODULE)
 
@@ -97,4 +99,3 @@ INSTALL(TARGETS dwg2ansysLib
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
 )
-

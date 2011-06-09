@@ -4,12 +4,13 @@
 #include "dbapserv.h"
 #include "dbsymtb.h"
 
+#include "GeomDB.h"
 #include "Serialize.h"
-#include "Model.h"
+#include <fstream>
 
 #include "dwg2ansysVersion.h"
 
-void close_everything( AcDbDatabase * &database, AcDbBlockTable * &block_table, AcDbBlockTableRecord * &block_table_record, AcDbBlockTableRecordIterator * &pRecordIter )
+void close_everything( AcDbDatabase * &database, AcDbBlockTable * &block_table, AcDbBlockTableRecord * &block_table_record, AcDbBlockTableRecordIterator * &pRecordIter, GeomDB * &target )
 {
   if ( pRecordIter != 0 )
   {
@@ -32,17 +33,22 @@ void close_everything( AcDbDatabase * &database, AcDbBlockTable * &block_table, 
     delete database;
     database = 0;
   }
+  if ( target != 0 )
+  {
+    delete target;
+    target = 0;
+  }
 }
 
-bool Convert::dwg_to_ansys( const wchar_t * source_name, std::ostream &os )
+bool Convert::dwg_to_ansys( const wchar_t * source_name, const wchar_t * target_name )
 {
-  size_t length = wcslen( source_name );
+  size_t source_length = wcslen( source_name );
   
-  if ( length < 5 )
+  if ( source_length < 5 )
     return false;
 
   AcDbDatabase * database = new AcDbDatabase(false);
-  if ( wcscmp( L".dwg", source_name + length - 4 ) == 0 )
+  if ( wcscmp( L".dwg", source_name + source_length - 4 ) == 0 )
   {
     if ( database->readDwgFile( source_name ) != Acad::eOk )
     {
@@ -50,7 +56,7 @@ bool Convert::dwg_to_ansys( const wchar_t * source_name, std::ostream &os )
       return false;
     }
   }
-  else if ( wcscmp( L".dxf", source_name + length - 4 ) == 0 )
+  else if ( wcscmp( L".dxf", source_name + source_length - 4 ) == 0 )
   {
     if ( database->dxfIn( source_name ) != Acad::eOk )
     {
@@ -65,6 +71,8 @@ bool Convert::dwg_to_ansys( const wchar_t * source_name, std::ostream &os )
   }
   acdbHostApplicationServices()->setWorkingDatabase( database );
 
+  GeomDB * targetDB = new GeomDB;
+
   AcDbBlockTable * block_table = 0;
   AcDbBlockTableRecord * block_table_record = 0;
   AcDbBlockTableRecordIterator * pRecordIter = 0;
@@ -72,26 +80,21 @@ bool Convert::dwg_to_ansys( const wchar_t * source_name, std::ostream &os )
 
   if ( database->getSymbolTable( block_table, AcDb::kForRead ) != Acad::eOk )
   {
-    close_everything( database, block_table, block_table_record, pRecordIter );
+    close_everything( database, block_table, block_table_record, pRecordIter, targetDB );
     return false;
   }
 
   if ( block_table->getAt( ACDB_MODEL_SPACE, block_table_record, AcDb::kForRead ) != Acad::eOk )
   {
-    close_everything( database, block_table, block_table_record, pRecordIter );
+    close_everything( database, block_table, block_table_record, pRecordIter, targetDB );
     return false;
   }
 
   if ( block_table_record->newIterator( pRecordIter ) != Acad::eOk )
   {
-    close_everything( database, block_table, block_table_record, pRecordIter );
+    close_everything( database, block_table, block_table_record, pRecordIter, targetDB );
     return false;
   }
-
-  os << "! This geometry was written by dwg2ansys, (c) Nasztanovics Ferenc\n";
-  os << "! Version: " << dwg2ansys_VERSION << "\n";
-  os << "/PREP7\n";
-  os << "!\n";
 
   while ( ! pRecordIter->done() )
   {
@@ -101,17 +104,22 @@ bool Convert::dwg_to_ansys( const wchar_t * source_name, std::ostream &os )
       continue;
     }
 
-    os << pEntity;
+    (*targetDB) << pEntity;
 
     pEntity->close();
     pRecordIter->step();
   }
 
-  os << "!\n";
-  os << "! Number of points: " << Model::CurrentModel.NumOfPoints << "\n";
-  os << "! Number of lines : " << Model::CurrentModel.NumOfLines << "\n";
-  os << "!\n";
+  std::fstream file( target_name );
+  if ( ! file.is_open() )
+  {
+    close_everything( database, block_table, block_table_record, pRecordIter, targetDB );
+    return true;
+  }
+  file << GeomDBWriter( *targetDB );
+  file.flush();
+  file.close();
 
-  close_everything( database, block_table, block_table_record, pRecordIter );
+  close_everything( database, block_table, block_table_record, pRecordIter, targetDB );
   return true;
 }
