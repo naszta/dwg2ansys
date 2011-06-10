@@ -5,15 +5,16 @@
 #include "GeomDB.h"
 
 #include "dwg2ansysLibExport.h"
+#include "dwg2ansysVersion.h"
 
 using std::ostream;
 
-class GeomDBWriter
+class dwg2ansysLib_EXPORT Serialize
 {
 public:
-  GeomDBWriter( GeomDB &my_db );
-  GeomDBWriter( GeomDB * my_db );
-  virtual ~GeomDBWriter( void );
+  Serialize( GeomDB &my_db );
+  Serialize( GeomDB * my_db );
+  virtual ~Serialize( void );
   virtual void write( ostream &os );
 protected:
   virtual void write_header( ostream &os );
@@ -30,10 +31,11 @@ protected:
   virtual void write_circle( ostream &os, size_t id, double center[3], double normal[3], double radius );
   virtual void write_circle_footer( ostream &os );
   virtual void write_footer( ostream &os );
+  virtual void write_other_elements( ostream &os );
 private:
   GeomDB &my_db;
 };
 
-dwg2ansysLib_EXPORT ostream & operator << ( ostream &os, GeomDBWriter &writer );
+dwg2ansysLib_EXPORT ostream & operator << ( ostream &os, Serialize &writer );
 
 #endif

@@ -104,19 +104,19 @@ bool Convert::dwg_to_ansys( const wchar_t * source_name, const wchar_t * target_
       continue;
     }
 
-    (*targetDB) << pEntity;
+    targetDB->AddEntity( pEntity );
 
     pEntity->close();
     pRecordIter->step();
   }
 
-  std::fstream file( target_name );
+  std::ofstream file( target_name, std::ios_base::out | std::ios_base::trunc );
   if ( ! file.is_open() )
   {
     close_everything( database, block_table, block_table_record, pRecordIter, targetDB );
     return true;
   }
-  file << GeomDBWriter( *targetDB );
+  file << Serialize( targetDB );
   file.flush();
   file.close();
 

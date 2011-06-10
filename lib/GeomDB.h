@@ -9,6 +9,8 @@
 using std::ostream;
 
 class AcDbEntity;
+class AcDbRegion;
+class AcDb3dSolid;
 
 class internalPointStore;
 class internalLineStore;
@@ -17,11 +19,12 @@ class internalCircleStore;
 
 class dwg2ansysLib_EXPORT GeomDB
 {
-  friend class GeomDBWriter;
+  friend class Serialize;
 public:
   enum { ERROR_ID = 0xFFFFFFFF };
   GeomDB( void );
   virtual ~GeomDB( void );
+  virtual bool AddEntity( AcDbEntity * entity );
   virtual GeomDB & operator << ( AcDbEntity * entity );
 
 protected:
@@ -59,9 +62,10 @@ protected:
     norm[2] = normal[2];
     return this->AddCircle( cent, norm, radius );
   };
+  virtual bool AddAdditionalEntities( AcDbEntity * entity );
 #ifdef USE_BREP_MODULE
-  virtual size_t AddRegion( size_t * ids, int * types, size_t size );
-  virtual size_t AddSolid( size_t * ids, int * types, size_t size );
+  virtual size_t AddRegion( AcDbRegion * region );
+  virtual size_t AddSolid( AcDb3dSolid * solid );
 #endif
 
 private:

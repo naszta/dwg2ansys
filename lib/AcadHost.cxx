@@ -89,7 +89,7 @@ Acad::ErrorStatus
 // Return our company name
 const ACHAR * AcadHost::companyName( void )
 {
-  return L"NasztaSoft";
+  return L"Nasztanovics Ferenc";
 }
 
 // Return our product name
@@ -121,7 +121,7 @@ AcadHost::StaticHost::StaticHost( void )
 {
   acdbSetHostApplicationServices( this->host );
   Adesk::Int32 lcid = 0x00000409;
-  acdbValidateSetup(lcid);  
+  acdbValidateSetup(lcid);
 }
 
 AcadHost::StaticHost::~StaticHost( void )

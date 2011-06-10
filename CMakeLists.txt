@@ -41,7 +41,8 @@ INSTALL(FILES
   "${RealDWG_ROOT_DIR}/ac1st18.dll"
   "${RealDWG_ROOT_DIR}/acdb18.dll"
   "${RealDWG_ROOT_DIR}/acge18.dll"
-  "${RealDWG_ROOT_DIR}/AcUt.dll" 
+  "${RealDWG_ROOT_DIR}/AcUt.dll"
+  "${RealDWG_ROOT_DIR}/acdb18enures.dll"
   DESTINATION bin
 )
 

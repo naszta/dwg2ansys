@@ -2,24 +2,24 @@
 
 #include "internalTypes.h"
 
-GeomDBWriter::GeomDBWriter( GeomDB &my_db )
+Serialize::Serialize( GeomDB &my_db )
   : my_db(my_db)
 {
 
 }
 
-GeomDBWriter::GeomDBWriter( GeomDB * my_db )
+Serialize::Serialize( GeomDB * my_db )
   : my_db(*my_db)
 {
 
 }
 
-GeomDBWriter::~GeomDBWriter( void )
+Serialize::~Serialize( void )
 {
 
 }
 
-void GeomDBWriter::write( ostream &os )
+void Serialize::write( ostream &os )
 {
   this->write_header(os);
 
@@ -59,10 +59,12 @@ void GeomDBWriter::write( ostream &os )
   }
   this->write_circle_footer(os);
 
+  this->write_other_elements(os);
+
   this->write_footer(os);
 }
 
-void GeomDBWriter::write_header( ostream &os )
+void Serialize::write_header( ostream &os )
 {
   os << "! This geometry was written by dwg2ansys, (c) Nasztanovics Ferenc\n";
   os << "! Version: " << dwg2ansys_VERSION << "\n";
@@ -70,12 +72,12 @@ void GeomDBWriter::write_header( ostream &os )
   os << "!\n";
 }
 
-void GeomDBWriter::write_point_header( ostream &os )
+void Serialize::write_point_header( ostream &os )
 {
 
 }
 
-void GeomDBWriter::write_point( ostream &os, size_t id, double point[3] )
+void Serialize::write_point( ostream &os, size_t id, double point[3] )
 {
   os << "K,";
   os << id << ",";
@@ -84,59 +86,59 @@ void GeomDBWriter::write_point( ostream &os, size_t id, double point[3] )
   os << point[2] << "\n";
 }
 
-void GeomDBWriter::write_point_footer( ostream &os )
+void Serialize::write_point_footer( ostream &os )
 {
 
 }
 
-void GeomDBWriter::write_line_header( ostream &os )
+void Serialize::write_line_header( ostream &os )
 {
 
 }
 
-void GeomDBWriter::write_line( ostream &os, size_t id, size_t from, size_t to )
+void Serialize::write_line( ostream &os, size_t id, size_t from, size_t to )
 {
   os << "L,";
   os << from << ",";
   os << to << "\n";
 }
 
-void GeomDBWriter::write_line_footer( ostream &os )
+void Serialize::write_line_footer( ostream &os )
 {
 
 }
 
-void GeomDBWriter::write_arc_header( ostream &os )
+void Serialize::write_arc_header( ostream &os )
 {
 
 }
 
-void GeomDBWriter::write_arc( ostream &os, size_t id, double center[3], double normal[3], double radius, double start_angle, double end_angle )
+void Serialize::write_arc( ostream &os, size_t id, double center[3], double normal[3], double radius, double start_angle, double end_angle )
 {
 
 }
 
-void GeomDBWriter::write_arc_footer( ostream &os )
+void Serialize::write_arc_footer( ostream &os )
 {
 
 }
 
-void GeomDBWriter::write_circle_header( ostream &os )
+void Serialize::write_circle_header( ostream &os )
 {
 
 }
 
-void GeomDBWriter::write_circle( ostream &os, size_t id, double center[3], double normal[3], double radius )
+void Serialize::write_circle( ostream &os, size_t id, double center[3], double normal[3], double radius )
 {
 
 }
 
-void GeomDBWriter::write_circle_footer( ostream &os )
+void Serialize::write_circle_footer( ostream &os )
 {
 
 }
 
-void GeomDBWriter::write_footer( ostream &os )
+void Serialize::write_footer( ostream &os )
 {
   os << "!\n";
   os << "! Number of points : " << my_db.point_store->size() << "\n";
@@ -146,7 +148,14 @@ void GeomDBWriter::write_footer( ostream &os )
   os << "!\n";
 }
 
-ostream & operator << ( ostream &os, GeomDBWriter &writer )
+#ifndef USE_BREP_MODULE
+void Serialize::write_other_elements( ostream &os )
+{
+
+}
+#endif
+
+ostream & operator << ( ostream &os, Serialize &writer )
 {
   writer.write(os);
   return os;

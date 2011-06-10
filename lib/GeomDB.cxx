@@ -22,14 +22,13 @@ GeomDB::~GeomDB( void )
   clean_up_vector( this->circle_store );
 }
 
-GeomDB & GeomDB::operator << ( AcDbEntity * entity )
+bool GeomDB::AddEntity( AcDbEntity * entity )
 {
   // point
   AcDbPoint * point = AcDbPoint::cast( entity );
   if ( point != 0 )
   {
-    this->AddPoint( point->position() );
-    return *this;
+    return ( this->AddPoint( point->position() ) != ERROR_ID );
   }
   // line
   AcDbLine * line = AcDbLine::cast( entity );
@@ -37,8 +36,7 @@ GeomDB & GeomDB::operator << ( AcDbEntity * entity )
   {
     size_t start = this->AddPoint( line->startPoint() );
     size_t end = this->AddPoint( line->endPoint() );
-    this->AddLine( start, end );
-    return *this;
+    return ( this->AddLine( start, end ) != ERROR_ID );
   }
   // polyline
   AcDbPolyline * polyline = AcDbPolyline::cast( entity );
@@ -56,7 +54,7 @@ GeomDB & GeomDB::operator << ( AcDbEntity * entity )
         start = end;
       }
     }
-    return *this;
+    return true;
   }
   // polyline 2d
   AcDb2dPolyline * polyline2d = AcDb2dPolyline::cast( entity );
@@ -82,7 +80,7 @@ GeomDB & GeomDB::operator << ( AcDbEntity * entity )
       pBbObjIter->step();
     }
     delete pBbObjIter;
-    return *this;
+    return true;
   }
   // polyline 3d
   AcDb3dPolyline * polyline3d = AcDb3dPolyline::cast( entity );
@@ -108,22 +106,26 @@ GeomDB & GeomDB::operator << ( AcDbEntity * entity )
       pBbObjIter->step();
     }
     delete pBbObjIter;
-    return *this;
+    return true;
   }
   // arc 
   AcDbArc * arc = AcDbArc::cast( entity );
   if ( arc != 0 )
   {
-    this->AddArc( arc->center(), arc->normal(), arc->radius(), arc->startAngle(), arc->endAngle() );
-    return *this;
+    return ( this->AddArc( arc->center(), arc->normal(), arc->radius(), arc->startAngle(), arc->endAngle() ) != ERROR_ID );
   }
   // circle
   AcDbCircle * circle = AcDbCircle::cast( entity );
   if ( circle != 0 )
   {
-    this->AddCircle( circle->center(), circle->normal(), circle->radius() );
-    return *this;
+    return ( this->AddCircle( circle->center(), circle->normal(), circle->radius() ) != ERROR_ID );
   }
+  return this->AddAdditionalEntities( entity );
+}
+
+GeomDB & GeomDB::operator << ( AcDbEntity * entity )
+{
+  this->AddEntity( entity );
   return *this;
 }
 
@@ -155,3 +157,9 @@ size_t GeomDB::AddCircle( double center[3], double normal[3], double radius )
   return return_value;
 }
 
+#ifndef USE_BREP_MODULE
+bool GeomDB::AddAdditionalEntities( AcDbEntity * entity )
+{
+  return false;
+}
+#endif
