@@ -8,37 +8,56 @@ GeomDBWriter::GeomDBWriter( GeomDB &my_db )
 
 }
 
+GeomDBWriter::GeomDBWriter( GeomDB * my_db )
+  : my_db(*my_db)
+{
+
+}
+
+GeomDBWriter::~GeomDBWriter( void )
+{
+
+}
+
 void GeomDBWriter::write( ostream &os )
 {
   this->write_header(os);
 
   size_t i = 0;
+  this->write_point_header(os);
   while ( i < my_db.point_store->size() )
   {
     this->write_point( os, i+1, (*my_db.point_store)[i]->point );
     ++i;
   }
+  this->write_point_footer(os);
 
   i = 0;
+  this->write_line_header( os );
   while ( i < my_db.line_store->size() )
   {
     this->write_line( os, i+1, (*my_db.line_store)[i]->from, (*my_db.line_store)[i]->to );
     ++i;
   }
+  this->write_line_footer( os );
 
   i = 0;
+  this->write_arc_header(os);
   while ( i < my_db.arc_store->size() )
   {
     this->write_arc( os, i+1, (*my_db.arc_store)[i]->center, (*my_db.arc_store)[i]->normal, (*my_db.arc_store)[i]->radius, (*my_db.arc_store)[i]->start_angle, (*my_db.arc_store)[i]->end_angle );
     ++i;
   }
+  this->write_arc_footer(os);
 
   i = 0;
+  this->write_circle_header(os);
   while ( i < my_db.circle_store->size() )
   {
     this->write_circle( os, i+1, (*my_db.circle_store)[i]->center, (*my_db.circle_store)[i]->normal, (*my_db.circle_store)[i]->radius );
     ++i;
   }
+  this->write_circle_footer(os);
 
   this->write_footer(os);
 }
@@ -51,6 +70,11 @@ void GeomDBWriter::write_header( ostream &os )
   os << "!\n";
 }
 
+void GeomDBWriter::write_point_header( ostream &os )
+{
+
+}
+
 void GeomDBWriter::write_point( ostream &os, size_t id, double point[3] )
 {
   os << "K,";
@@ -60,6 +84,16 @@ void GeomDBWriter::write_point( ostream &os, size_t id, double point[3] )
   os << point[2] << "\n";
 }
 
+void GeomDBWriter::write_point_footer( ostream &os )
+{
+
+}
+
+void GeomDBWriter::write_line_header( ostream &os )
+{
+
+}
+
 void GeomDBWriter::write_line( ostream &os, size_t id, size_t from, size_t to )
 {
   os << "L,";
@@ -67,12 +101,37 @@ void GeomDBWriter::write_line( ostream &os, size_t id, size_t from, size_t to )
   os << to << "\n";
 }
 
+void GeomDBWriter::write_line_footer( ostream &os )
+{
+
+}
+
+void GeomDBWriter::write_arc_header( ostream &os )
+{
+
+}
+
 void GeomDBWriter::write_arc( ostream &os, size_t id, double center[3], double normal[3], double radius, double start_angle, double end_angle )
 {
 
 }
 
+void GeomDBWriter::write_arc_footer( ostream &os )
+{
+
+}
+
+void GeomDBWriter::write_circle_header( ostream &os )
+{
+
+}
+
 void GeomDBWriter::write_circle( ostream &os, size_t id, double center[3], double normal[3], double radius )
+{
+
+}
+
+void GeomDBWriter::write_circle_footer( ostream &os )
 {
 
 }

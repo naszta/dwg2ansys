@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>Convert DWG to ANSYS</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="resources.qrc">
+    <normaloff>:/main/icon.ico</normaloff>:/main/icon.ico</iconset>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <layout class="QHBoxLayout" name="horizontalLayoutFrom">
